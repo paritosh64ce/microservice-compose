@@ -17,7 +17,6 @@ services:
     ports:
       - "${PORT_UI}:80"
     depends_on:
-      - sql.GloboTicket
       - api.discount
       - api.eventcatalog
       - api.sbasket
@@ -32,9 +31,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=DiscountDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
-    depends_on:
-      - sql.GloboTicket
+      - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=DiscountDB;${SQLConnStrCommonPart}
     ports:
       - "${PORT_DISCOUNT}:80"
 
@@ -45,9 +42,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=EventCatalogDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
-    depends_on:
-      - sql.GloboTicket
+      - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=EventCatalogDB;${SQLConnStrCommonPart}
     ports:
       - "${PORT_ECATALOG}:80"
   
@@ -60,9 +55,8 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ApiConfigs__EventCatalog__Uri=http://${HOST_ADDRESS}:${PORT_ECATALOG}
       - ApiConfigs__Discount__Uri=http://${HOST_ADDRESS}:${PORT_DISCOUNT}
-      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=SBasketDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=SBasketDB;${SQLConnStrCommonPart}
     depends_on:
-      - sql.GloboTicket
       - api.eventcatalog
       - api.discount
     ports:
@@ -75,10 +69,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=SBasketDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=SBasketDB;${SQLConnStrCommonPart}
       - ServiceBusConnectionString=${SB_CONN_STR}
-    depends_on:
-      - sql.GloboTicket
     ports:
       - "${PORT_ORDER}:80"
 
@@ -90,9 +82,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
       - ApiConfigs__ShoppingBasket__Uri=http://${HOST_ADDRESS}:${PORT_SBASKET}
-      - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=MarketingDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=MarketingDB;${SQLConnStrCommonPart}
     depends_on:
-      - sql.GloboTicket
       - api.sbasket
     ports:
       - "${PORT_MARKETING}:80"
@@ -111,16 +102,6 @@ services:
     ports:
       - "${PORT_PAYMENT}:80"
 
-  sql.GloboTicket:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "${SQLPASSWD}"
-      ACCEPT_EULA: "Y"
-    volumes:
-      - "${DB_VOLUMN_LOCAL_PATH}:/var/opt/mssql/data"
-  
   ext.paymentgateway:
     build:
       context: .
@@ -139,4 +120,4 @@ services:
 #       - ASPNETCORE_URLS=http://+:80
 # ##      - ASPNETCORE_URLS=https://+:443;http://+:80
 # ##      - ASPNETCORE_HTTPS_PORT=44302
-#       - ConnectionStrings__DefaultConnection=Server=${SQLSERVER};database=DiscountDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True
+#       - ConnectionStrings__DefaultConnection=Server=${AzSQLServer};Initial Catalog=DiscountDB;User Id=${SQLUSR};Password=${SQLPASSWD};TrustServerCertificate=True;Encrypt=false;Connection Timeout=${DBConnTimeout};

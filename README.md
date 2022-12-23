@@ -58,6 +58,16 @@ To deploy existing `.Net Core 3.1` microservices as `docker` containers; using `
 
     - The file names are case-sensitive in linux based OS/docker-images. Updating the names properly in CSS fixes this issue.
 
+- Issue 6: Azure SQL DB connection issue
+    > microservice-compose-api.discount-1  | Unhandled exception. Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: TCP Provider, error: 35 - An internal exception was caught)  
+    > microservice-compose-api.discount-1  |  ---> System.Net.Internals.SocketExceptionFactory+ExtendedSocketException (00000005, 0xFFFDFFFF): Name or service not known
+    - Add correct client ip address in firewall rule for Azure SQL Server
+    - Check SQL Server Host Name - do not prefit it with `tcp`, etc
+
+- Issue 7: Error while `docker-compose up` - `Error response from daemon: network _key_ not found`  
+    - https://stackoverflow.com/questions/39640963/error-response-from-daemon-network-myapp-not-found/69266310#69266310
+    - Solution: Remove container (not Image) and then run again
+
 ### Done:
 - Use mssql server container for database and mount volumn
 - Start other services with DB dependencies and start using Az Message Bus
@@ -69,3 +79,8 @@ To deploy existing `.Net Core 3.1` microservices as `docker` containers; using `
 - Configure application to use https: Reference: https://medium.com/@woeterman_94/docker-in-visual-studio-unable-to-configure-https-endpoint-f95727187f5f
 - Use JWT and OpenAuth
 - Error at the time of placing the order `Something went wrong placing your order. Please try again.`
+
+-   > microservice-compose-ui.web-1              | warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]  
+    > microservice-compose-ui.web-1              |       Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. > Protected data will be unavailable when container is destroyed.  
+    > microservice-compose-ui.web-1              | warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]  
+    > microservice-compose-ui.web-1              |       No XML encryptor configured. Key {489d93a9-8dae-4f77-898e-ba1443daf1fd} may be persisted to storage in unencrypted form.

@@ -23,11 +23,15 @@ To deploy existing `.Net Core 3.1` microservices as `docker` containers; using `
     docker-compose down
     ```
 
-- Note: While working with SQL DB in docker image for the very first time, 
+- **Note:**  
+While working with SQL DB in `docker image` for the very first time, you may have to do `docker-compose up` at-least twice.  
+The reason is: the required DBs for microservices have not yet initialized; which in turn won't start the dependant microservices.  
+Doing this will get the DBs created sequentially (by EF - check the docker logs and your mounted folder.)  
+Once all the DBs get created, all the microservices will start.
 
 ## Branches:
+
 - sql-image: The DBs are hosted in `mcr.microsoft.com/mssql/server:2019-latest` container; mounted in local filesystem
-- `TODO:` az-sql: The DBs are hosted in Azure SQL DBs
 
 ## Dev Notes:
 
